@@ -25,9 +25,15 @@ int main()
     {
         clear();
         title(0);
-        mvaddstr(20,22,"Premi INVIO per giocare");
         input=getch();
         if(input=='q'){endwin();exit(1);}
+        if((input=='w'||input==KEY_UP)) {cpm=(cpm+1)%2;}
+        if((input=='s'||input==KEY_DOWN)) {cpm=(cpm+1)%2;}
+        if((input=='a'||input==KEY_LEFT)) {cpm=(cpm+1)%2;;}
+        if((input=='d'||input==KEY_RIGHT)) {cpm=(cpm+1)%2;;}
+        frame(cpm);
+        mvaddstr(24,26,"Gioca contro USER");
+        mvaddstr(21,26,"Gioca contro CPU");
         if(input == '\n') break;
         refresh();
         napms(50);
@@ -84,12 +90,12 @@ int main()
             t+=5;
             napms(50);
         }
-
+        
         if(win[0]==0)
         win_dat[0]++;
         if(win[0]==1)
         win_dat[1]++;
-
+        
         while (1) 
         {
             clear();
@@ -114,7 +120,7 @@ int main()
             refresh();
             napms(50);
         }
-
+        
         
     }
     endwin();

@@ -16,6 +16,8 @@ typedef struct{
 
 void title(int p);
 
+void frame(int p);
+
 void disegna_griglia(int p);
 
 void disegna_sign1(int riga, int colonna, int tipo);
@@ -44,6 +46,6 @@ void stp_win(int i);
 
 void stp_tab(int dat[2]);
 
-void comp_move(int state[3][3],int sign,int state_upd[4]);
+void comp_move_hard(int state[3][3],int sign,int state_upd[4]);
 
 #endif

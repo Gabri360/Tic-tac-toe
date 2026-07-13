@@ -37,6 +37,20 @@ void title(int p)
     }
 }
 
+void frame(int p)
+{
+    const wchar_t *frame_box[] = {
+        L"╔══════════════════════════════════════════════════════════╗",
+        L"║                                                          ║",
+        L"╚══════════════════════════════════════════════════════════╝"
+    };
+    
+    int righe_box = sizeof(frame_box) / sizeof(frame_box[0]);
+    for (int i = 0; i < righe_box; i++)
+    mvaddwstr(i + 23-p*3, 5, frame_box[i]);
+    
+}
+
 void disegna_griglia(int p)
 {
     const wchar_t *grid[] = {
@@ -318,29 +332,10 @@ void disegna_sign_upd(int state_upd[4],unsigned long t, int state[3][3],int *sig
         *sign=(*sign+1)%2;
         if(verify_end(state,mi_serve)!=1&&cpm==1&&*move_c==1)
         {
-            comp_move(state,*sign,state_upd);
+            comp_move_hard(state,*sign,state_upd);
+            state_upd[0]=*sign;
             state_upd[3]=t;
             *move_c=0;
-        }
-    }
-}
-
-void comp_move(int state[3][3],int sign,int state_upd[4])
-{
-    int i=0,n1=rand()%3,n2=rand()%3; 
-    while(i==0)
-    {
-        if(state[n1][n2]==-1)
-        {
-            state_upd[0]=sign;
-            state_upd[1]=n1;
-            state_upd[2]=n2;
-            i=1;    
-        }
-        else
-        {
-            n1=rand()%3;
-            n2=rand()%3; 
         }
     }
 }
@@ -542,5 +537,498 @@ void stp_tab(int dat[2])
     for(int q=0;q<dat[1];q++)
     mvaddwstr(2*q+27,102, L"▒▒▒▒▒▒▒▒▒");
     
+}
+
+void comp_move_hard(int state[3][3],int sign,int state_upd[4])
+{
+    int n1=rand()%3,n2=rand()%3,ind1=0; 
+    static int turn=1;
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==sign)
+            {
+                ind1=1;
+                break;
+            }
+        }
+        if(ind1==1) break;
+    }
+    if(ind1==0) turn=1;
+    
+    if(state[1][1]==-1)
+    {
+        state_upd[1]=1;
+        state_upd[2]=1;
+        turn++;
+        return;
+    }
+    //-----------------------------------------------------------------------------------------------------------
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==state[i][(j+1)%3]&&state[i][j]!=-1&&state[i][(j+2)%3]==-1&&state[i][j]==sign)
+            {
+                state_upd[1]=i;
+                state_upd[2]=(j+2)%3;
+                turn++;
+                return;
+            }
+        }
+        for(int j=0;j<3;j++)
+        {
+            if(state[j][i]==state[(j+1)%3][i]&&state[j][i]!=-1&&state[(j+2)%3][i]==-1&&state[j][i]==sign)
+            {
+                state_upd[1]=(j+2)%3;
+                state_upd[2]=i;
+                turn++;
+                return;
+            }
+        }
+    }
+    if(state[1][1]==state[0][0]&&state[2][2]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][0]&&state[0][2]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[0][2]&&state[2][0]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][2]&&state[0][0]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    
+    
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==state[i][(j+1)%3]&&state[i][j]!=-1&&state[i][(j+2)%3]==-1&&state[i][j]!=sign)
+            {
+                state_upd[1]=i;
+                state_upd[2]=(j+2)%3;
+                turn++;
+                return;
+            }
+        }
+        for(int j=0;j<3;j++)
+        {
+            if(state[j][i]==state[(j+1)%3][i]&&state[j][i]!=-1&&state[(j+2)%3][i]==-1&&state[j][i]!=sign)
+            {
+                state_upd[1]=(j+2)%3;
+                state_upd[2]=i;
+                turn++;
+                return;
+            }
+        }
+    }
+    if(state[1][1]==state[0][0]&&state[2][2]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][0]&&state[0][2]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[0][2]&&state[2][0]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][2]&&state[0][0]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    
+    //-----------------------------------------------------------------------------------------------------------
+
+    if(turn==1)
+    {
+        while(1)
+        {
+            if(state[n1][n2]==-1&&((n1==2&&n2==2)||(n1==2&&n2==0)||(n1==0&&n2==2)||(n1==0&&n2==0)))
+            {
+                state_upd[1]=n1;
+                state_upd[2]=n2;
+                turn++;
+                return;
+            }
+            else
+            {
+                n1=rand()%3;
+                n2=rand()%3; 
+            }
+        }
+    }
+    if(turn==2&&state[0][0]!=sign&&state[2][2]!=sign&&state[0][0]!=-1&&state[2][2]!=-1)
+    {
+        state_upd[1]=0;
+        state_upd[2]=1;
+        turn++;
+        return;
+    }
+    if(turn==2&&state[0][2]!=sign&&state[2][0]!=sign&&state[0][2]!=-1&&state[2][0]!=-1)
+    {
+        state_upd[1]=1;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    if(turn==2&&state[1][1]!=sign)
+    {
+        if(state[0][0]!=sign&&state[0][0]!=-1)
+        {
+            state_upd[1]=0;
+            state_upd[2]=2;
+            turn++;
+            return;
+        }
+        if(state[0][2]!=sign&&state[0][2]!=-1)
+        {
+            state_upd[1]=0;
+            state_upd[2]=0;
+            turn++;
+            return;
+        }
+        if(state[2][0]!=sign&&state[2][0]!=-1)
+        {
+            state_upd[1]=2;
+            state_upd[2]=2;
+            turn++;
+            return;
+        }
+        if(state[2][2]!=sign&&state[2][2]!=-1)
+        {
+            state_upd[1]=2;
+            state_upd[2]=0;
+            turn++;
+            return;
+        }
+    }
+    
+    while(1)
+    {
+        if(state[n1][n2]==-1)
+        {
+            state_upd[1]=n1;
+            state_upd[2]=n2;
+            turn++;
+            return;
+        }
+        else
+        {
+            n1=rand()%3;
+            n2=rand()%3; 
+        }
+    }
+    
+}
+
+void comp_move_medium(int state[3][3],int sign,int state_upd[4])
+{
+    int n1=rand()%3,n2=rand()%3,ind1=0; 
+    static int turn=1;
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==sign)
+            {
+                ind1=1;
+                break;
+            }
+        }
+        if(ind1==1) break;
+    }
+    if(ind1==0) turn=1;
+    
+    if(state[1][1]==-1)
+    {
+        state_upd[1]=1;
+        state_upd[2]=1;
+        turn++;
+        return;
+    }
+    //-----------------------------------------------------------------------------------------------------------
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==state[i][(j+1)%3]&&state[i][j]!=-1&&state[i][(j+2)%3]==-1&&state[i][j]==sign)
+            {
+                state_upd[1]=i;
+                state_upd[2]=(j+2)%3;
+                turn++;
+                return;
+            }
+        }
+        for(int j=0;j<3;j++)
+        {
+            if(state[j][i]==state[(j+1)%3][i]&&state[j][i]!=-1&&state[(j+2)%3][i]==-1&&state[j][i]==sign)
+            {
+                state_upd[1]=(j+2)%3;
+                state_upd[2]=i;
+                turn++;
+                return;
+            }
+        }
+    }
+    if(state[1][1]==state[0][0]&&state[2][2]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][0]&&state[0][2]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[0][2]&&state[2][0]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][2]&&state[0][0]==-1&&state[1][1]==sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    
+    
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==state[i][(j+1)%3]&&state[i][j]!=-1&&state[i][(j+2)%3]==-1&&state[i][j]!=sign)
+            {
+                state_upd[1]=i;
+                state_upd[2]=(j+2)%3;
+                turn++;
+                return;
+            }
+        }
+        for(int j=0;j<3;j++)
+        {
+            if(state[j][i]==state[(j+1)%3][i]&&state[j][i]!=-1&&state[(j+2)%3][i]==-1&&state[j][i]!=sign)
+            {
+                state_upd[1]=(j+2)%3;
+                state_upd[2]=i;
+                turn++;
+                return;
+            }
+        }
+    }
+    if(state[1][1]==state[0][0]&&state[2][2]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][0]&&state[0][2]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=2;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[0][2]&&state[2][0]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=2;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    if(state[1][1]==state[2][2]&&state[0][0]==-1&&state[1][1]!=sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    
+    //-----------------------------------------------------------------------------------------------------------
+    
+    if(turn==1&&state[1][1]!=-1)
+    {
+        while(1)
+        {
+            if(state[n1][n2]==-1&&((n1==2&&n2==2)||(n1==2&&n2==0)||(n1==0&&n2==2)||(n1==0&&n2==0)))
+            {
+                state_upd[1]=n1;
+                state_upd[2]=n2;
+                turn++;
+                return;
+            }
+            else
+            {
+                n1=rand()%3;
+                n2=rand()%3; 
+            }
+        }
+    }
+    if(turn==2&&state[0][0]!=sign&&state[2][2]!=sign)
+    {
+        state_upd[1]=0;
+        state_upd[2]=1;
+        turn++;
+        return;
+    }
+    if(turn==2&&state[0][2]!=sign&&state[2][0]!=sign)
+    {
+        state_upd[1]=1;
+        state_upd[2]=0;
+        turn++;
+        return;
+    }
+    
+    while(1)
+    {
+        if(state[n1][n2]==-1)
+        {
+            state_upd[1]=n1;
+            state_upd[2]=n2;
+            turn++;
+            return;
+        }
+        else
+        {
+            n1=rand()%3;
+            n2=rand()%3; 
+        }
+    }
+    
+}
+
+
+void comp_move_easy(int state[3][3],int sign,int state_upd[4])
+{
+    int n1=rand()%3,n2=rand()%3; 
+    if(state[1][1]==-1)
+    {
+        state_upd[1]=1;
+        state_upd[2]=1;
+        return;
+    }
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            if(state[i][j]==state[i][(j+1)%3]&&state[i][j]!=-1&&state[i][(j+2)%3]==-1)
+            {
+                state_upd[1]=i;
+                state_upd[2]=(j+2)%3;
+                return;
+            }
+        }
+        for(int j=0;j<3;j++)
+        {
+            if(state[j][i]==state[(j+1)%3][i]&&state[j][i]!=-1&&state[(j+2)%3][i]==-1)
+            {
+                state_upd[1]=(j+2)%3;
+                state_upd[2]=i;
+                return;
+            }
+        }
+    }
+    if(state[1][1]==state[0][0]&&state[2][2]==-1)
+    {
+        state_upd[1]=2;
+        state_upd[2]=2;
+        return;
+    }
+    if(state[1][1]==state[2][0]&&state[0][2]==-1)
+    {
+        state_upd[1]=0;
+        state_upd[2]=2;
+        return;
+    }
+    if(state[1][1]==state[0][2]&&state[2][0]==-1)
+    {
+        state_upd[1]=2;
+        state_upd[2]=0;
+        return;
+    }
+    if(state[1][1]==state[2][2]&&state[0][0]==-1)
+    {
+        state_upd[1]=0;
+        state_upd[2]=0;
+        return;
+    }
+    
+    while(1)
+    {
+        if(state[n1][n2]==-1)
+        {
+            state_upd[1]=n1;
+            state_upd[2]=n2;
+            return;
+        }
+        else
+        {
+            n1=rand()%3;
+            n2=rand()%3; 
+        }
+    }
+    
+    
+}
+
+void comp_move_rand(int state[3][3],int sign,int state_upd[4])
+{
+    int i=0,n1=rand()%3,n2=rand()%3; 
+    while(i==0)
+    {
+        if(state[n1][n2]==-1)
+        {
+            state_upd[0]=sign;
+            state_upd[1]=n1;
+            state_upd[2]=n2;
+            i=1;
+        }
+        else
+        {
+            n1=rand()%3;
+            n2=rand()%3; 
+        }
+    }
 }
 

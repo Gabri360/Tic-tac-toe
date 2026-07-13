@@ -1,7 +1,6 @@
 CFLAGS=-O3 -pedantic -std=c99
 #CFLAGS=-g -O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99
 
-#all: isto random gauss_MCMC ising
 all: tris
 
 tris: tris.o tris_lib.o
