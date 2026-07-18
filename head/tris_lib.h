@@ -34,7 +34,7 @@ void disegna_punt(int riga, int colonna);
 
 void disegna_state(int state[3][3]);
 
-void disegna_sign_upd(int state_upd[4],unsigned long t, int state[3][3],int *sign, int cpm,int *move_c);
+void disegna_sign_upd(int state_upd[4],int t, int state[3][3],int *sign, int cpm,int *move_c,int diff);
 
 void init_state(int state[3][3]);
 
@@ -47,5 +47,9 @@ void stp_win(int i);
 void stp_tab(int dat[2]);
 
 void comp_move_hard(int state[3][3],int sign,int state_upd[4]);
+
+void comp_move_medium(int state[3][3],int sign,int state_upd[4]);
+
+void comp_move_easy(int state[3][3],int state_upd[4]);
 
 #endif

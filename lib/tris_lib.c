@@ -47,7 +47,7 @@ void frame(int p)
     
     int righe_box = sizeof(frame_box) / sizeof(frame_box[0]);
     for (int i = 0; i < righe_box; i++)
-    mvaddwstr(i + 23-p*3, 5, frame_box[i]);
+    mvaddwstr(i + 20+p*3, 5, frame_box[i]);
     
 }
 
@@ -316,7 +316,7 @@ void disegna_punt(int riga, int colonna)
     }
 }
 
-void disegna_sign_upd(int state_upd[4],unsigned long t, int state[3][3],int *sign, int cpm,int *move_c)
+void disegna_sign_upd(int state_upd[4],int t, int state[3][3],int *sign, int cpm,int *move_c,int diff)
 {
     int mi_serve[3];
     if((t-state_upd[3])<5&&state_upd[3]!=0)
@@ -332,6 +332,11 @@ void disegna_sign_upd(int state_upd[4],unsigned long t, int state[3][3],int *sig
         *sign=(*sign+1)%2;
         if(verify_end(state,mi_serve)!=1&&cpm==1&&*move_c==1)
         {
+            if(diff==0)
+            comp_move_easy(state,state_upd);
+            if(diff==1)
+            comp_move_medium(state,*sign,state_upd);
+            if(diff==3)
             comp_move_hard(state,*sign,state_upd);
             state_upd[0]=*sign;
             state_upd[3]=t;
@@ -671,7 +676,7 @@ void comp_move_hard(int state[3][3],int sign,int state_upd[4])
     }
     
     //-----------------------------------------------------------------------------------------------------------
-
+    
     if(turn==1)
     {
         while(1)
@@ -939,7 +944,7 @@ void comp_move_medium(int state[3][3],int sign,int state_upd[4])
 }
 
 
-void comp_move_easy(int state[3][3],int sign,int state_upd[4])
+void comp_move_easy(int state[3][3],int state_upd[4])
 {
     int n1=rand()%3,n2=rand()%3; 
     if(state[1][1]==-1)

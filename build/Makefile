@@ -1,5 +1,5 @@
-CFLAGS=-O3 -pedantic -std=c99
-#CFLAGS=-g -O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99
+#CFLAGS=-O3 -pedantic -std=c99
+CFLAGS=-g -O3 -Wall -Wextra -Werror -pedantic -Wconversion -std=c99
 
 all: tris
 

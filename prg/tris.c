@@ -6,15 +6,15 @@
 int main()
 {
     setlocale(LC_ALL, "");
-    srand(time(NULL)); 
+    srand((unsigned int) time(NULL)); 
     initscr();
     noecho();
     curs_set(FALSE);
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
-    int input,indp_rig=0,indp_col=0,ind_list=0,cpm=1,move_c=0;
+    int input,indp_rig=0,indp_col=0,cpm=1,move_c=0,diff=0;
     int state_upd[4];
-    unsigned long t=0;
+    int t=0;
     int win[3],win_dat[2]={0,0};
     int sign=1,sign_r=1;
     int state[3][3];
@@ -31,12 +31,33 @@ int main()
         if((input=='s'||input==KEY_DOWN)) {cpm=(cpm+1)%2;}
         if((input=='a'||input==KEY_LEFT)) {cpm=(cpm+1)%2;;}
         if((input=='d'||input==KEY_RIGHT)) {cpm=(cpm+1)%2;;}
-        frame(cpm);
-        mvaddstr(24,26,"Gioca contro USER");
-        mvaddstr(21,26,"Gioca contro CPU");
+        frame(!cpm);
+        mvaddstr(24,26,"Play against USER");
+        mvaddstr(21,26,"Play against CPU");
         if(input == '\n') break;
         refresh();
         napms(50);
+    }
+    if(cpm==1)
+    {
+        while(1)
+        {
+            clear();
+            title(0);
+            input=getch();
+            if(input=='q'){endwin();exit(1);}
+            if((input=='w'||input==KEY_UP)) {diff=(diff+2)%3;}
+            if((input=='s'||input==KEY_DOWN)) {diff=(diff+1)%3;}
+            if((input=='a'||input==KEY_LEFT)) {diff=(diff+2)%3;;}
+            if((input=='d'||input==KEY_RIGHT)) {diff=(diff+1)%3;;}
+            frame(diff);
+            mvaddstr(21,26,"EASY");
+            mvaddstr(24,26,"MEDIUM");
+            mvaddstr(27,26,"HARD");
+            if(input == '\n') break;
+            refresh();
+            napms(50);
+        }
     }
     while(1)
     {
@@ -75,14 +96,17 @@ int main()
                 move_c=1;
             }
             disegna_punt(indp_rig,indp_col);
-            disegna_sign_upd(state_upd,t,state,&sign,cpm,&move_c);
+            disegna_sign_upd(state_upd,t,state,&sign,cpm,&move_c,diff);
             
             disegna_state(state);
             
-            if(sign_r==0)
-            mvaddstr(43,43,"è il turno di: O");
-            else
-            mvaddstr(43,43,"è il turno di: X");
+            if(cpm==0)
+            {
+                if(sign_r==0)
+                mvaddstr(43,43,"O has to play");
+                else
+                mvaddstr(43,43,"X has to play");
+            }
             
             if(verify_end(state,win)==1)
             break;
@@ -115,8 +139,8 @@ int main()
             
             stp_tab(win_dat);
             
-            mvaddstr(45,43,"Premi INVIO per rigiocare");
-            mvaddstr(46,43,"Premi Q per uscire");
+            mvaddstr(45,43,"Press ENTER to play again");
+            mvaddstr(46,43,"Press Q to exit");
             refresh();
             napms(50);
         }
